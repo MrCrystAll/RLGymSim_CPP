@@ -17,6 +17,8 @@ namespace RLGSC {
 
 	// https://github.com/AechPro/rocket-league-gym-sim/blob/main/rlgym_sim/utils/gamestates/game_state.py
 	struct GameState {
+		float deltaTime = 0; // Time that has passed since last update
+
 		ScoreLine scoreLine;
 		int lastTouchCarID = -1;
 		std::vector<PlayerData> players;
@@ -24,8 +26,11 @@ namespace RLGSC {
 		BallState ballState;
 		PhysObj ball, ballInv;
 
-		bool boostPads[CommonValues::BOOST_LOCATIONS_AMOUNT];
-		bool boostPadsInv[CommonValues::BOOST_LOCATIONS_AMOUNT];
+		std::array<bool, CommonValues::BOOST_LOCATIONS_AMOUNT> boostPads;
+		std::array<bool, CommonValues::BOOST_LOCATIONS_AMOUNT> boostPadsInv;
+
+		std::array<float, CommonValues::BOOST_LOCATIONS_AMOUNT> boostPadTimers;
+		std::array<float, CommonValues::BOOST_LOCATIONS_AMOUNT> boostPadTimersInv;
 
 		// Last arena we updated with
 		// Can be used to determine current arena from within reward function, for example

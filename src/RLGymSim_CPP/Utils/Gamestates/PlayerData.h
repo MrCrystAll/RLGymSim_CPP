@@ -16,11 +16,14 @@ namespace RLGSC {
 		int
 			matchGoals = 0,
 			matchSaves = 0,
-			matchShots = 0,
 			matchAssists = 0,
+			matchShots = 0,
+			matchShotPasses = 0,
 			matchBumps = 0, 
 			matchDemos = 0,
 			boostPickups = 0;
+
+		bool hasJump;
 		bool hasFlip;
 		float boostFraction; // From 0 to 1
 
