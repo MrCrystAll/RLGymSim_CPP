@@ -1,6 +1,6 @@
 ﻿cmake_minimum_required (VERSION 3.8)
 
-project("RLGymSim_CPP")
+project("RLGymSim_CPP" VERSION 1.0.0)
 
 include(FetchContent)
 
