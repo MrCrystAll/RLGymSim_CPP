@@ -1,5 +1,6 @@
 #pragma once
 #include "Envs/Match.h"
+#include <Sim/GameEventTracker/GameEventTracker.h>
 
 namespace RLGSC {
 	class Gym {
