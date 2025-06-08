@@ -2,6 +2,8 @@
 
 project("RLGymSim_CPP" VERSION 1.0.0)
 
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+
 include(FetchContent)
 
 FetchContent_Declare(
