@@ -61,7 +61,7 @@ jobs:
       shell: pwsh
       working-directory: ${{ steps.strings.outputs.build-output-dir }}
       run: |
-        Compress-Archive -Path RLGymSim_CPP.lib -DestinationPath "../RLGymSim_CPP-windows.zip"
+        Compress-Archive -Path RLGymSim_CPP.lib, RLGymSim_CPP_SHARED.dll -DestinationPath "../RLGymSim_CPP-windows.zip"
       
     - name: Package library (Linux/macOS)
       if: matrix.config.os != 'windows-latest'
@@ -71,7 +71,7 @@ jobs:
         # Example: Tar and gzip your built library files. Adjust as needed.
         # This assumes your library is located at libmy_library.so or libmy_library.a
         # You'll need to modify this to match your actual build output structure.
-        tar -czvf "../RLGymSim_CPP-${{ matrix.config.artifact_suffix }}.tar.gz" ./libRLGymSim_CPP.a
+        tar -czvf "../RLGymSim_CPP-${{ matrix.config.artifact_suffix }}.tar.gz" ./libRLGymSim_CPP.a ./libRLGymSim_CPP_SHARED.so
 
     - name: Upload artifact
       uses: actions/upload-artifact@v4
