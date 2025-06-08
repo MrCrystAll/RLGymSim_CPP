@@ -1,4 +1,4 @@
-#include "Math.h"
+#include <RLGymSim_CPP/Math.h>
 
 bool RLGSC::Math::IsBallScored(Vec pos) {
 	return abs(pos.y) > RLConst::SOCCAR_GOAL_SCORE_BASE_THRESHOLD_Y + RLConst::BALL_COLLISION_RADIUS_SOCCAR;

@@ -1,4 +1,4 @@
-#include "DefaultOBS.h"
+#include <RLGymSim_CPP/Utils/OBSBuilders/DefaultOBS.h>
 
 void RLGSC::DefaultOBS::AddPlayerToOBS(FList& obs, const PlayerData& player, bool inv) {
 	PhysObj phys = player.GetPhys(inv);

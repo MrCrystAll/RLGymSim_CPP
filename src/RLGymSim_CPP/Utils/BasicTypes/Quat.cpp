@@ -1,4 +1,4 @@
-#include "Quat.h"
+#include <RLGymSim_CPP/Utils/BasicTypes/Quat.h>
 
 namespace RLGSC {
 	Quat Quat::FromRotMat(const RotMat& rotMat) {

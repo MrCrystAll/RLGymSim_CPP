@@ -1,4 +1,4 @@
-#include "DiscreteAction.h"
+#include <RLGymSim_CPP/Utils/ActionParsers/DiscreteAction.h>
 
 RLGSC::DiscreteAction::DiscreteAction() {
 	Action a = {};

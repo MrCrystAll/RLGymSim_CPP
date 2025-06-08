@@ -1,6 +1,5 @@
-#include "GameState.h"
-
-#include "../../Math.h"
+#include <RLGymSim_CPP/Utils/Gamestates/GameState.h>
+#include <RLGymSim_CPP/Math.h>
 
 using namespace RLGSC;
 

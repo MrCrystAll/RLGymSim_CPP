@@ -1,5 +1,6 @@
-#include "RandomState.h"
-#include "../../Math.h"
+#include <RLGymSim_CPP/Utils/StateSetters/RandomState.h>
+#include <RLGymSim_CPP/Math.h>
+
 
 Vec RandNormVec() {
 	return RLGSC::Math::RandVec(Vec(-1, -1, -1), Vec(1, 1, 1)).Normalized();

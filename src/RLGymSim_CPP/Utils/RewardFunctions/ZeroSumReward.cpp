@@ -1,4 +1,4 @@
-#include "ZeroSumReward.h"
+#include <RLGymSim_CPP/Utils/RewardFunctions/ZeroSumReward.h>
 
 std::vector<float> RLGSC::ZeroSumReward::GetAllRewards(const GameState& state, const ActionSet& prevActions, bool final) {
 	std::vector<float> rewards = childFunc->GetAllRewards(state, prevActions, final);

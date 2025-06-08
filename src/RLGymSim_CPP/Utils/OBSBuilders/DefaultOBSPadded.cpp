@@ -1,4 +1,4 @@
-#include "DefaultOBSPadded.h"
+#include <RLGymSim_CPP/Utils/OBSBuilders/DefaultOBSPadded.h>
 
 RLGSC::FList RLGSC::DefaultOBSPadded::BuildOBS(const PlayerData& player, const GameState& state, const Action& prevAction) {
 	FList result = {};

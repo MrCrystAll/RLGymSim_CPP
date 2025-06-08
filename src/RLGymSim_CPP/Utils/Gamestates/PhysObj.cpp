@@ -1,4 +1,4 @@
-#include "PhysObj.h"
+#include <RLGymSim_CPP/Utils/Gamestates/PhysObj.h>
 
 template<typename T>
 void _InitPhysObj(RLGSC::PhysObj* obj, const T& rsState) {
