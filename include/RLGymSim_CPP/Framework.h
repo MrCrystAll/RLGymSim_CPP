@@ -1,8 +1,9 @@
 #pragma once
 
 #define RS_DONT_LOG // Prevent annoying log spam
-#include "RocketSim.h"
-#include "Sim/GameEventTracker/GameEventTracker.h"
+
+#include <RocketSim/RocketSim.h>
+#include <RocketSim/Sim/GameEventTracker/GameEventTracker.h>
 
 // Use RocketSim namespace
 using namespace RocketSim;

@@ -1,33 +1,96 @@
-﻿cmake_minimum_required (VERSION 3.8)
+﻿cmake_minimum_required (VERSION 3.21)
 
 project("RLGymSim_CPP" VERSION 1.0.0)
 
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-include(FetchContent)
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
-FetchContent_Declare(
-	RocketSim
-	GIT_REPOSITORY https://github.com/ZealanL/RocketSim
-	GIT_TAG v2.2
+include(Download)
+include(CMakePackageConfigHelpers)
+include(CheckIPOSupported)
+
+set(RLGymSim_CPP_INSTALL_CMAKEDIR lib/cmake/RLGymSim_CPP)
+
+# Optional: version file
+write_basic_package_version_file(
+    "${CMAKE_CURRENT_BINARY_DIR}/RLGymSim_CPPConfigVersion.cmake"
+    VERSION ${PROJECT_VERSION}
+    COMPATIBILITY AnyNewerVersion
 )
-FetchContent_MakeAvailable(RocketSim)
+
+configure_package_config_file(
+    "${CMAKE_SOURCE_DIR}/cmake/RLGymSim_CPPConfig.cmake.in"
+    "${CMAKE_CURRENT_BINARY_DIR}/RLGymSim_CPPConfig.cmake"
+    INSTALL_DESTINATION ${RLGymSim_CPP_INSTALL_CMAKEDIR}
+)
+
+message(STATUS "Binary DIR: ${CMAKE_BINARY_DIR}")
+
+option(BUILD_SHARED_LIBS "Build shared libraries" ON)
+
+set(ROCKETSIM_VERSION "2.2.0")
+set(ROCKETSIM_URL "https://github.com/MrCrystAll/RocketSim/releases/download/v${ROCKETSIM_VERSION}/RocketSim-windows.zip")
+set(ROCKETSIM_ARCHIVE "RocketSim.zip")
+set(ROCKETSIM_DIR "${CMAKE_BINARY_DIR}/deps/RocketSim")
+
+FETCH_AND_EXTRACT_FROM_SCRIPTS(
+	URL ${ROCKETSIM_URL}
+	EXTRACT_DIR ${ROCKETSIM_DIR}
+	ARCHIVE_NAME ${ROCKETSIM_ARCHIVE}
+)
+
+list(APPEND CMAKE_PREFIX_PATH "${ROCKETSIM_DIR}")
+
+find_package(RocketSim CONFIG REQUIRED)
 
 # Add all headers and code files
-file(GLOB_RECURSE FILES_SRC "src/*.cpp")
-add_library(RLGymSim_CPP STATIC ${FILES_SRC})
-add_library(RLGymSim_CPP_SHARED SHARED ${FILES_SRC})
-target_compile_definitions(RLGymSim_CPP_SHARED PRIVATE -DWITHIN_RLGSC)
-target_include_directories(RLGymSim_CPP PUBLIC "include" "${RocketSim_SOURCE_DIR}/src")
-target_include_directories(RLGymSim_CPP_SHARED PUBLIC "include" "${RocketSim_SOURCE_DIR}/src")
+file(GLOB_RECURSE FILES_SRC "src/*.cpp" "include/.h")
+add_library(RLGymSim_CPP ${FILES_SRC})
+
+# Apply a macro if building shared lib
+if(BUILD_SHARED_LIBS)
+    target_compile_definitions(RLGymSim_CPP PRIVATE -DWITHIN_RLGSC)
+endif()
+
+target_include_directories(RLGymSim_CPP
+		PUBLIC
+		$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
+		$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/generated>
+		$<BUILD_INTERFACE:${RocketSim_INCLUDE_DIRS}>
+		$<INSTALL_INTERFACE:include>
+)
 
 # Set C++ version to 20
 set_target_properties(RLGymSim_CPP PROPERTIES LINKER_LANGUAGE CXX)
 set_target_properties(RLGymSim_CPP PROPERTIES CXX_STANDARD 20)
 
-# Set C++ version to 20
-set_target_properties(RLGymSim_CPP_SHARED PROPERTIES LINKER_LANGUAGE CXX)
-set_target_properties(RLGymSim_CPP_SHARED PROPERTIES CXX_STANDARD 20)
+target_link_libraries(RLGymSim_CPP PUBLIC RocketSim::RocketSim)
 
-target_link_libraries(RLGymSim_CPP PUBLIC RocketSim)
-target_link_libraries(RLGymSim_CPP_SHARED PUBLIC RocketSim)
+check_ipo_supported(RESULT result OUTPUT output)
+
+if(result)
+    message(STATUS "IPO / LTO supported")
+    set_target_properties(RLGymSim_CPP PROPERTIES INTERPROCEDURAL_OPTIMIZATION TRUE)
+else()
+    message(STATUS "IPO / LTO not supported: ${output}")
+endif()
+
+# Output to build directory
+configure_file(
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/RLGymSim_CPP/version.h.in
+    ${CMAKE_CURRENT_BINARY_DIR}/generated/RLGymSim_CPP/version.h
+    @ONLY
+)
+
+install(FILES cmake/FindRLGymSim_CPP.cmake
+        DESTINATION cmake)
+
+include(InstallUtils)
+
+INSTALL_TARGET(TARGET_NAME RLGymSim_CPP INSTALL_CMAKEDIR ${RLGymSim_CPP_INSTALL_CMAKEDIR})
+
+install(FILES
+    ${CMAKE_SOURCE_DIR}/README.md
+    DESTINATION .
+)
