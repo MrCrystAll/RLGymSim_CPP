@@ -1,6 +1,6 @@
 ﻿cmake_minimum_required (VERSION 3.21)
 
-project("RLGymSim_CPP" VERSION 1.0.0)
+project("RLGymSim_CPP" VERSION 1.0.1)
 
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
@@ -24,8 +24,6 @@ configure_package_config_file(
     "${CMAKE_CURRENT_BINARY_DIR}/RLGymSim_CPPConfig.cmake"
     INSTALL_DESTINATION ${RLGymSim_CPP_INSTALL_CMAKEDIR}
 )
-
-message(STATUS "Binary DIR: ${CMAKE_BINARY_DIR}")
 
 option(BUILD_SHARED_LIBS "Build shared libraries" ON)
 
