@@ -38,6 +38,7 @@ jobs:
       shell: bash
       run: |
         echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
+        echo "install-dir=${{ github.workspace }}/install" >> "$GITHUB_OUTPUT"
 
     - name: Setup Ninja
       uses: ashutoshvarma/setup-ninja@master
@@ -55,13 +56,15 @@ jobs:
         configure-options: -G Ninja
         build-type: Release
         run-test: true
+        install-build: true
+        install-options: --prefix ${{ steps.strings.outputs.install-dir }}
 
     - name: Package library (Windows)
       if: matrix.config.os == 'windows-latest'
       shell: pwsh
       working-directory: ${{ steps.strings.outputs.build-output-dir }}
       run: |
-        Compress-Archive -Path RLGymSim_CPP.lib, RLGymSim_CPP_SHARED.dll -DestinationPath "../RLGymSim_CPP-windows.zip"
+        Compress-Archive -Path "${{ steps.strings.outputs.install-dir }}/*" -DestinationPath "../RLGymSim_CPP-windows.zip"
       
     - name: Package library (Linux/macOS)
       if: matrix.config.os != 'windows-latest'
@@ -71,7 +74,7 @@ jobs:
         # Example: Tar and gzip your built library files. Adjust as needed.
         # This assumes your library is located at libmy_library.so or libmy_library.a
         # You'll need to modify this to match your actual build output structure.
-        tar -czvf "../RLGymSim_CPP-${{ matrix.config.artifact_suffix }}.tar.gz" ./libRLGymSim_CPP.a ./libRLGymSim_CPP_SHARED.so
+        tar -czvf "../RLGymSim_CPP-${{ matrix.config.artifact_suffix }}.tar.gz" -C ${{ steps.strings.outputs.install-dir }} .
 
     - name: Upload artifact
       uses: actions/upload-artifact@v4
@@ -80,7 +83,6 @@ jobs:
         path: |
           ${{ github.workspace }}/RLGymSim_CPP-windows.zip
           ${{ github.workspace }}/RLGymSim_CPP-linux.tar.gz
-          ${{ github.workspace }}/RLGymSim_CPP-macos.tar.gz
         retention-days: 1 # You can adjust this as needed
 
   release:
@@ -116,7 +118,6 @@ jobs:
         files: |
           artifacts/*/RLGymSim_CPP-windows.zip
           artifacts/*/RLGymSim_CPP-linux.tar.gz
-          artifacts/*/RLGymSim_CPP-macos.tar.gz
         draft: false
         prerelease: false
       env:
