@@ -30,8 +30,14 @@ message(STATUS "Binary DIR: ${CMAKE_BINARY_DIR}")
 option(BUILD_SHARED_LIBS "Build shared libraries" ON)
 
 set(ROCKETSIM_VERSION "2.2.0")
-set(ROCKETSIM_URL "https://github.com/MrCrystAll/RocketSim/releases/download/v${ROCKETSIM_VERSION}/RocketSim-windows.zip")
-set(ROCKETSIM_ARCHIVE "RocketSim.zip")
+if(UNIX)
+    set(ROCKETSIM_URL "https://github.com/MrCrystAll/RocketSim/releases/download/v${ROCKETSIM_VERSION}/RocketSim-linux.zip")
+    set(ROCKETSIM_ARCHIVE "RocketSim.tar.gz")
+elseif(WIN32)
+    set(ROCKETSIM_URL "https://github.com/MrCrystAll/RocketSim/releases/download/v${ROCKETSIM_VERSION}/RocketSim-windows.zip")
+    set(ROCKETSIM_ARCHIVE "RocketSim.zip")
+endif()
+
 set(ROCKETSIM_DIR "${CMAKE_BINARY_DIR}/deps/RocketSim")
 
 FETCH_AND_EXTRACT_FROM_SCRIPTS(
