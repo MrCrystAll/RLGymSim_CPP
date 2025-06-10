@@ -29,7 +29,7 @@ message(STATUS "Binary DIR: ${CMAKE_BINARY_DIR}")
 
 option(BUILD_SHARED_LIBS "Build shared libraries" ON)
 
-set(ROCKETSIM_VERSION "2.2.0")
+set(ROCKETSIM_VERSION "2.2.1")
 if(UNIX)
     set(ROCKETSIM_URL "https://github.com/MrCrystAll/RocketSim/releases/download/v${ROCKETSIM_VERSION}/RocketSim-linux.tar.gz")
     set(ROCKETSIM_ARCHIVE "RocketSim.tar.gz")
