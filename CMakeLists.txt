@@ -57,7 +57,6 @@ target_include_directories(RLGymSim_CPP
 		PUBLIC
 		$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
 		$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/generated>
-		$<BUILD_INTERFACE:${RocketSim_INCLUDE_DIRS}>
 		$<INSTALL_INTERFACE:include>
 )
 
@@ -87,6 +86,14 @@ install(FILES cmake/FindRLGymSim_CPP.cmake
         DESTINATION cmake)
 
 include(InstallUtils)
+
+install(DIRECTORY ${CMAKE_BINARY_DIR}/deps/RocketSim/include
+	DESTINATION .
+)
+
+install(DIRECTORY ${CMAKE_BINARY_DIR}/deps/RocketSim/lib
+	DESTINATION .
+)
 
 INSTALL_TARGET(TARGET_NAME RLGymSim_CPP INSTALL_CMAKEDIR ${RLGymSim_CPP_INSTALL_CMAKEDIR})
 
