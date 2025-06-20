@@ -1,63 +1,60 @@
 ﻿cmake_minimum_required (VERSION 3.21)
 
-project("RLGymSim_CPP" VERSION 1.0.1)
+project("RLGymSim_CPP" VERSION 1.0.1 LANGUAGES CXX)
 
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
-include(Download)
+include(FetchLib)
 include(CMakePackageConfigHelpers)
 include(CheckIPOSupported)
+include(GNUInstallDirs)
 
-set(RLGymSim_CPP_INSTALL_CMAKEDIR lib/cmake/RLGymSim_CPP)
+option(PACKAGE_ROCKETSIM "Package rocketsim within the installed bins" ON)
+
+# Define path variables
+set(${PROJECT_NAME}_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/include")
+set(${PROJECT_NAME}_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src")
+set(${PROJECT_NAME}_CMAKE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+
+# For installed package
+set(${PROJECT_NAME}_INSTALL_INCLUDE_DIR "${CMAKE_INSTALL_INCLUDEDIR}")
+set(${PROJECT_NAME}_INSTALL_LIB_DIR "${CMAKE_INSTALL_LIBDIR}")
+set(${PROJECT_NAME}_INSTALL_CMAKE_DIR "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}")
 
 # Optional: version file
 write_basic_package_version_file(
-    "${CMAKE_CURRENT_BINARY_DIR}/RLGymSim_CPPConfigVersion.cmake"
+    "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake"
     VERSION ${PROJECT_VERSION}
     COMPATIBILITY AnyNewerVersion
 )
 
 configure_package_config_file(
-    "${CMAKE_SOURCE_DIR}/cmake/RLGymSim_CPPConfig.cmake.in"
-    "${CMAKE_CURRENT_BINARY_DIR}/RLGymSim_CPPConfig.cmake"
-    INSTALL_DESTINATION ${RLGymSim_CPP_INSTALL_CMAKEDIR}
+    "${CMAKE_SOURCE_DIR}/cmake/${PROJECT_NAME}Config.cmake.in"
+    "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
+    INSTALL_DESTINATION ${${PROJECT_NAME}_INSTALL_CMAKE_DIR}
 )
 
 option(BUILD_SHARED_LIBS "Build shared libraries" ON)
 
-set(ROCKETSIM_VERSION "2.2.1")
-if(UNIX)
-    set(ROCKETSIM_URL "https://github.com/MrCrystAll/RocketSim/releases/download/v${ROCKETSIM_VERSION}/RocketSim-linux.tar.gz")
-    set(ROCKETSIM_ARCHIVE "RocketSim.tar.gz")
-elseif(WIN32)
-    set(ROCKETSIM_URL "https://github.com/MrCrystAll/RocketSim/releases/download/v${ROCKETSIM_VERSION}/RocketSim-windows.zip")
-    set(ROCKETSIM_ARCHIVE "RocketSim.zip")
-endif()
-
-set(ROCKETSIM_DIR "${CMAKE_BINARY_DIR}/deps/RocketSim")
-
-FETCH_AND_EXTRACT_FROM_SCRIPTS(
-	URL ${ROCKETSIM_URL}
-	EXTRACT_DIR ${ROCKETSIM_DIR}
-	ARCHIVE_NAME ${ROCKETSIM_ARCHIVE}
+FETCH_LIB(
+    OWNER MrCrystAll
+    REPO RocketSim
+    TAG v2.2.3
 )
-
-list(APPEND CMAKE_PREFIX_PATH "${ROCKETSIM_DIR}")
-
-find_package(RocketSim CONFIG REQUIRED)
+find_package(RocketSim REQUIRED)
 
 # Add all headers and code files
 file(GLOB_RECURSE FILES_SRC "src/*.cpp" "include/.h")
-add_library(RLGymSim_CPP ${FILES_SRC})
+add_library(${PROJECT_NAME} ${FILES_SRC})
 
 # Apply a macro if building shared lib
 if(BUILD_SHARED_LIBS)
-    target_compile_definitions(RLGymSim_CPP PRIVATE -DWITHIN_RLGSC)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE -DWITHIN_RLGSC)
 endif()
 
-target_include_directories(RLGymSim_CPP
+target_include_directories(${PROJECT_NAME}
 		PUBLIC
 		$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
 		$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/generated>
@@ -65,43 +62,89 @@ target_include_directories(RLGymSim_CPP
 )
 
 # Set C++ version to 20
-set_target_properties(RLGymSim_CPP PROPERTIES LINKER_LANGUAGE CXX)
-set_target_properties(RLGymSim_CPP PROPERTIES CXX_STANDARD 20)
+set_target_properties(${PROJECT_NAME} PROPERTIES LINKER_LANGUAGE CXX)
+set_target_properties(${PROJECT_NAME} PROPERTIES CXX_STANDARD 20)
 
-target_link_libraries(RLGymSim_CPP PUBLIC RocketSim::RocketSim)
+target_link_libraries(${PROJECT_NAME} PUBLIC RocketSim::RocketSim)
 
 check_ipo_supported(RESULT result OUTPUT output)
 
 if(result)
     message(STATUS "IPO / LTO supported")
-    set_target_properties(RLGymSim_CPP PROPERTIES INTERPROCEDURAL_OPTIMIZATION TRUE)
+    set_target_properties(${PROJECT_NAME} PROPERTIES INTERPROCEDURAL_OPTIMIZATION TRUE)
 else()
     message(STATUS "IPO / LTO not supported: ${output}")
 endif()
 
+install(TARGETS ${PROJECT_NAME}
+		EXPORT ${PROJECT_NAME}Targets
+		RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+		LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+		ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+		INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+	)
+
+# Install targets file
+install(EXPORT ${PROJECT_NAME}Targets
+    FILE ${PROJECT_NAME}Targets.cmake
+    NAMESPACE ${PROJECT_NAME}::
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
+)
+
 # Output to build directory
 configure_file(
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/RLGymSim_CPP/version.h.in
-    ${CMAKE_CURRENT_BINARY_DIR}/generated/RLGymSim_CPP/version.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/${PROJECT_NAME}/version.h.in
+    ${CMAKE_CURRENT_BINARY_DIR}/generated/${PROJECT_NAME}/version.h
     @ONLY
 )
 
-install(FILES cmake/FindRLGymSim_CPP.cmake
-        DESTINATION cmake)
-
-include(InstallUtils)
-
-install(DIRECTORY ${CMAKE_BINARY_DIR}/deps/RocketSim/include
-	DESTINATION .
+# Install headers
+install(DIRECTORY ${${PROJECT_NAME}_INCLUDE_DIR}/
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+    FILES_MATCHING PATTERN "*.h"
 )
 
-install(DIRECTORY ${CMAKE_BINARY_DIR}/deps/RocketSim/lib
-	DESTINATION .
+# Configure package config file
+configure_package_config_file(
+    ${${PROJECT_NAME}_CMAKE_DIR}/${PROJECT_NAME}Config.cmake.in
+    ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
+    INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
+    PATH_VARS CMAKE_INSTALL_INCLUDEDIR CMAKE_INSTALL_LIBDIR
 )
 
-INSTALL_TARGET(TARGET_NAME RLGymSim_CPP INSTALL_CMAKEDIR ${RLGymSim_CPP_INSTALL_CMAKEDIR})
+# Create version file
+write_basic_package_version_file(
+    ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake
+    VERSION ${PROJECT_VERSION}
+    COMPATIBILITY SameMajorVersion
+)
+
+# Install config files
+install(FILES
+    ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
+    ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
+)
 
 install(FILES
     ${CMAKE_SOURCE_DIR}/README.md
     DESTINATION .
 )
+
+if(PACKAGE_ROCKETSIM)
+    # Install headers
+    install(DIRECTORY ${RocketSim_INCLUDE_DIRS}/
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+        FILES_MATCHING PATTERN "*.h"
+    )
+
+    # Install cmake config
+    install(DIRECTORY ${RocketSim_CMAKE_DIR}/
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/RocketSim
+    )
+
+    # Install libs
+    install(DIRECTORY ${RocketSim_LIB_DIR}/
+        DESTINATION ${${PROJECT_NAME}_INSTALL_LIB_DIR}
+    )
+endif()
