@@ -1,4 +1,4 @@
-﻿cmake_minimum_required (VERSION 3.21)
+﻿cmake_minimum_required (VERSION 3.31)
 
 project("RLGymSim_CPP" VERSION 1.0.1 LANGUAGES CXX)
 
@@ -6,7 +6,7 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
-include(FetchLib)
+include(FetchFromGH)
 include(CMakePackageConfigHelpers)
 include(CheckIPOSupported)
 include(GNUInstallDirs)
@@ -38,11 +38,12 @@ configure_package_config_file(
 
 option(BUILD_SHARED_LIBS "Build shared libraries" ON)
 
-FETCH_LIB(
-    OWNER MrCrystAll
-    REPO RocketSim
+DOWNLOAD_GITHUB_RELEASE(
+    NAME RocketSim
+    REPO MrCrystAll/RocketSim
     TAG v2.2.3
 )
+
 find_package(RocketSim REQUIRED)
 
 # Add all headers and code files
@@ -58,6 +59,7 @@ target_include_directories(${PROJECT_NAME}
 		PUBLIC
 		$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
 		$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/generated>
+        $<BUILD_INTERFACE:${RocketSim_INCLUDE_DIR}>
 		$<INSTALL_INTERFACE:include>
 )
 
@@ -65,7 +67,7 @@ target_include_directories(${PROJECT_NAME}
 set_target_properties(${PROJECT_NAME} PROPERTIES LINKER_LANGUAGE CXX)
 set_target_properties(${PROJECT_NAME} PROPERTIES CXX_STANDARD 20)
 
-target_link_libraries(${PROJECT_NAME} PUBLIC RocketSim::RocketSim)
+target_link_libraries(${PROJECT_NAME} PUBLIC ${RocketSim_LIB_DIR}/RocketSim.lib)
 
 check_ipo_supported(RESULT result OUTPUT output)
 
