@@ -69,11 +69,6 @@ function(download_github_release)
         message(STATUS "Using ${DGR_NAME} found here: ${${DGR_NAME}_DIR}")
     endif()
     
-    if(${LOWER_DGR_NAME}_SOURCE_DIR)
-        set(${LOWER_DGR_NAME}_SOURCE_DIR "${${LOWER_DGR_NAME}_SOURCE_DIR}" PARENT_SCOPE)
-        set(${LOWER_DGR_NAME}_BINARY_DIR "${${LOWER_DGR_NAME}_BINARY_DIR}" PARENT_SCOPE)
-    endif()
-
     set(${DGR_NAME}_CMAKE_DIR ${${LOWER_DGR_NAME}_SOURCE_DIR}/lib/cmake)
     list(APPEND CMAKE_PREFIX_PATH  "${${DGR_NAME}_CMAKE_DIR}")
 
