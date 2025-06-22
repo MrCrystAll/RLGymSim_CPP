@@ -1,9 +1,9 @@
 #pragma once
-#include "Framework.h"
+#include <RLGymSim_CPP/Framework.h>
 
 namespace RLGSC {
 	namespace Math {
-		bool IsBallScored(Vec pos);
-		Vec RandVec(Vec min, Vec max);
+		bool RG_IMEXPORT IsBallScored(Vec pos);
+		Vec RG_IMEXPORT RandVec(Vec min, Vec max);
 	}
 }
