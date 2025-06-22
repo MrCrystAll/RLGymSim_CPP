@@ -1,22 +1,5 @@
 cmake_minimum_required(VERSION 3.24)
 
-# Function to print all variables starting with a specific prefix
-function(print_variables_with_prefix PREFIX)
-    get_cmake_property(_variableNames VARIABLES)
-    list(SORT _variableNames)
-    
-    message(STATUS "Variables starting with '${PREFIX}':")
-    message(STATUS "=====================================")
-    
-    foreach(_variableName ${_variableNames})
-        if(_variableName MATCHES "^${PREFIX}")
-            message(STATUS "${_variableName} = ${${_variableName}}")
-        endif()
-    endforeach()
-    
-    message(STATUS "=====================================")
-endfunction()
-
 function(download_github_release)
     set(options "")
     set(oneValueArgs NAME REPO TAG)
