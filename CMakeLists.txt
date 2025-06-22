@@ -59,7 +59,6 @@ target_include_directories(${PROJECT_NAME}
 		PUBLIC
 		$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
 		$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/generated>
-        $<BUILD_INTERFACE:${RocketSim_INCLUDE_DIR}>
 		$<INSTALL_INTERFACE:include>
 )
 
@@ -67,7 +66,7 @@ target_include_directories(${PROJECT_NAME}
 set_target_properties(${PROJECT_NAME} PROPERTIES LINKER_LANGUAGE CXX)
 set_target_properties(${PROJECT_NAME} PROPERTIES CXX_STANDARD 20)
 
-target_link_libraries(${PROJECT_NAME} PUBLIC ${RocketSim_LIB_DIR}/RocketSim.lib)
+target_link_libraries(${PROJECT_NAME} PUBLIC RocketSim::RocketSim)
 
 check_ipo_supported(RESULT result OUTPUT output)
 
