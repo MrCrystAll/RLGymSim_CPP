@@ -49,6 +49,7 @@ jobs:
       uses: ashutoshvarma/action-cmake-build@master
       env:
         CI: true
+        GITHUB_TOKEN: ${{ github.token }}
       with:
         build-dir: ${{ steps.strings.outputs.build-output-dir }}
         cc: ${{ matrix.config.cc }}
