@@ -1,6 +1,6 @@
 ﻿cmake_minimum_required (VERSION 3.31)
 
-project("RLGymSim_CPP" VERSION 1.0.8 LANGUAGES CXX)
+project("RLGymSim_CPP" VERSION 1.0.9 LANGUAGES CXX)
 
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
@@ -42,8 +42,7 @@ option(BUILD_SHARED_LIBS "Build shared libraries" ON)
 DOWNLOAD_GITHUB_RELEASE(
     NAME RocketSim
     REPO MrCrystAll/RocketSim
-    TAG v2.2.6
-    FORCE_DL TRUE
+    TAG v2.2.7
 )
 
 find_package(RocketSim REQUIRED)
