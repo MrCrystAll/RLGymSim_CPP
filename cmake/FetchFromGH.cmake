@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.24)
 
 function(download_github_release)
     set(options "")
-    set(oneValueArgs NAME REPO TAG)
+    set(oneValueArgs NAME REPO TAG FORCE_DL)
     set(multiValueArgs "")
     
     cmake_parse_arguments(DGR "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
@@ -18,6 +18,10 @@ function(download_github_release)
     
     if(NOT DGR_TAG)
         message(FATAL_ERROR "TAG is required")
+    endif()
+
+    if(NOT DGR_FORCE_DL)
+        set(DGR_FORCE_DL FALSE)
     endif()
     
     # Determine platform-specific asset pattern
@@ -38,7 +42,7 @@ function(download_github_release)
     # Check if already populated
     FetchContent_GetProperties(${DGR_NAME})
 
-    if(NOT ${DGR_NAME}_DIR)
+    if(NOT ${DGR_NAME}_DIR OR ${DGR_FORCE_DL})
         message(STATUS "[${DGR_NAME}] Downloading and extracting from ${RELEASE_URL}")
         
         FetchContent_Declare(
