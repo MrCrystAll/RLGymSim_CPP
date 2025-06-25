@@ -42,7 +42,8 @@ option(BUILD_SHARED_LIBS "Build shared libraries" ON)
 DOWNLOAD_GITHUB_RELEASE(
     NAME RocketSim
     REPO MrCrystAll/RocketSim
-    TAG v2.2.5
+    TAG v2.2.6
+    FORCE_DL TRUE
 )
 
 find_package(RocketSim REQUIRED)
