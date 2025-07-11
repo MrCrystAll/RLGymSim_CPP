@@ -4,10 +4,10 @@ name: CMake on multiple platforms
 
 on:
   push:
-    branches: [ "master" ]
+    branches: [ "master", "dev" ]
     tags: [ "v*.*.*" ] # This will trigger on tags like v1.0.0, v2.1.0, etc.
   pull_request:
-    branches: [ "master" ]
+    branches: [ "master", "dev" ]
 
 jobs:
   build:
