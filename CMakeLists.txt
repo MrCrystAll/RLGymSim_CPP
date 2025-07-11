@@ -4,37 +4,12 @@ project("RLGymSim_CPP" VERSION 1.0.9 LANGUAGES CXX)
 
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-find_package(Git)
-
-if(DEFINED ENV{GITHUB_TOKEN})
-    set(TOKEN $ENV{GITHUB_TOKEN})
-elseif(DEFINED ENV{VOID_PAT})
-    set(TOKEN $ENV{VOID_PAT})
-endif()
-
-if(Git_FOUND)
-	message(STATUS "Git executable found at: ${GIT_EXECUTABLE}")
-	if(EXISTS ${PROJECT_SOURCE_DIR}/cmake/utils)
-		execute_process(
-			COMMAND ${GIT_EXECUTABLE} -C ${PROJECT_SOURCE_DIR}/cmake/utils pull
-		)
-	else()
-		execute_process(
-			COMMAND ${GIT_EXECUTABLE} clone https://cryystall-void:${TOKEN}@github.com/Void_CMake_Utils.git ${PROJECT_SOURCE_DIR}/cmake/utils
-		)
-	endif()
-else()
-	message(FATAL_ERROR "Git not found, can't fetch cmake utilities")
-endif()
-
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/utils")
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 include(FetchFromGH)
 include(CMakePackageConfigHelpers)
 include(CheckIPOSupported)
 include(GNUInstallDirs)
-
-
 
 option(PACKAGE_ROCKETSIM "Package rocketsim within the installed bins" ON)
 

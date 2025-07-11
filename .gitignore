@@ -48,5 +48,3 @@ CMakeSettings.json
 
 # Anything starting with three underscores
 ___*
-
-cmake/utils
