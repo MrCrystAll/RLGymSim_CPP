@@ -54,6 +54,13 @@ else()
     message(STATUS "IPO / LTO not supported: ${output}")
 endif()
 
+if(WIN32)
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        $<TARGET_FILE:RocketSim::RocketSim>
+        $<TARGET_FILE_DIR:${PROJECT_NAME}>)
+endif()
+
 # Define path variables
 set(${PROJECT_NAME}_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/include")
 set(${PROJECT_NAME}_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src")
