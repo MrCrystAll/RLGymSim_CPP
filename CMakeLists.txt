@@ -1,6 +1,6 @@
 ﻿cmake_minimum_required (VERSION 3.31)
 
-project("RLGymSim_CPP" VERSION 1.0.9 LANGUAGES CXX)
+project("RLGymSim_CPP" VERSION 1.0.10 LANGUAGES CXX)
 
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
