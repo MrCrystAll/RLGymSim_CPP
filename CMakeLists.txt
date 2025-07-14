@@ -1,6 +1,6 @@
 ﻿cmake_minimum_required (VERSION 3.31)
 
-project("RLGymSim_CPP" VERSION 1.0.9 LANGUAGES CXX)
+project("RLGymSim_CPP" VERSION 1.0.10 LANGUAGES CXX)
 
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
@@ -12,30 +12,6 @@ include(CheckIPOSupported)
 include(GNUInstallDirs)
 
 option(PACKAGE_ROCKETSIM "Package rocketsim within the installed bins" ON)
-
-# Define path variables
-set(${PROJECT_NAME}_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/include")
-set(${PROJECT_NAME}_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src")
-set(${PROJECT_NAME}_CMAKE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
-
-# For installed package
-set(${PROJECT_NAME}_INSTALL_INCLUDE_DIR "${CMAKE_INSTALL_INCLUDEDIR}")
-set(${PROJECT_NAME}_INSTALL_LIB_DIR "${CMAKE_INSTALL_LIBDIR}")
-set(${PROJECT_NAME}_INSTALL_CMAKE_DIR "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}")
-set(${PROJECT_NAME}_INSTALL_BIN_DIR "${CMAKE_INSTALL_BINDIR}")
-
-# Optional: version file
-write_basic_package_version_file(
-    "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake"
-    VERSION ${PROJECT_VERSION}
-    COMPATIBILITY AnyNewerVersion
-)
-
-configure_package_config_file(
-    "${CMAKE_SOURCE_DIR}/cmake/${PROJECT_NAME}Config.cmake.in"
-    "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
-    INSTALL_DESTINATION ${${PROJECT_NAME}_INSTALL_CMAKE_DIR}
-)
 
 option(BUILD_SHARED_LIBS "Build shared libraries" ON)
 
@@ -58,7 +34,7 @@ endif()
 
 target_include_directories(${PROJECT_NAME}
 		PUBLIC
-		$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
+		$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 		$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/generated>
 		$<INSTALL_INTERFACE:include>
 )
@@ -77,6 +53,37 @@ if(result)
 else()
     message(STATUS "IPO / LTO not supported: ${output}")
 endif()
+
+if(WIN32)
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        $<TARGET_FILE:RocketSim::RocketSim>
+        $<TARGET_FILE_DIR:${PROJECT_NAME}>)
+endif()
+
+# Define path variables
+set(${PROJECT_NAME}_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/include")
+set(${PROJECT_NAME}_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src")
+set(${PROJECT_NAME}_CMAKE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+
+# For installed package
+set(${PROJECT_NAME}_INSTALL_INCLUDE_DIR "${CMAKE_INSTALL_INCLUDEDIR}")
+set(${PROJECT_NAME}_INSTALL_LIB_DIR "${CMAKE_INSTALL_LIBDIR}")
+set(${PROJECT_NAME}_INSTALL_CMAKE_DIR "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}")
+set(${PROJECT_NAME}_INSTALL_BIN_DIR "${CMAKE_INSTALL_BINDIR}")
+
+# Optional: version file
+write_basic_package_version_file(
+    "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake"
+    VERSION ${PROJECT_VERSION}
+    COMPATIBILITY AnyNewerVersion
+)
+
+configure_package_config_file(
+    "${CMAKE_CURRENT_SOURCE_DIR}/cmake/${PROJECT_NAME}Config.cmake.in"
+    "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
+    INSTALL_DESTINATION ${${PROJECT_NAME}_INSTALL_CMAKE_DIR}
+)
 
 install(TARGETS ${PROJECT_NAME}
 		EXPORT ${PROJECT_NAME}Targets
@@ -129,7 +136,7 @@ install(FILES
 )
 
 install(FILES
-    ${CMAKE_SOURCE_DIR}/README.md
+    ${CMAKE_CURRENT_SOURCE_DIR}/README.md
     DESTINATION .
 )
 

@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.10] - 2025-07-14
+
+### Added
+
+- Kickoff state is back in the API
+- Allowed the project to be pulled via fetchcontent
+
 ## [1.0.9] - 2025-06-25
 
 ### Changed
